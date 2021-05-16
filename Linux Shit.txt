@@ -1,0 +1,390 @@
+
+### MANJARO PACMAN COMMANDS  ###
+
+$ sudo pacman-mirrors --geoip && sudo pacman -Syyu    = updated and sync to mirrors closest to you
+$ sudo pacman -Syu smplayer  = install smplayer
+
+$ sudo pacman -R smplayer	 = remove smplayer but leaves all dependencies
+$ sudo pacman -Rs smplayer    = remove smplayer and recursively removes unncecessary dependencies (SAFEST!)
+
+$ sudo pacman -Rsu smplayer	 = recursively removes unncecessary dependencies and removes unneeded packages and associated configuration files.
+
+$ pacman -Qdt = lists all orphans
+$ sudo pacman -Rs $(pacman -Qdtq) = removes all orphans.  BE CAREFUL!!!!!
+
+### LOOK AT JOURNALCTL ERRORS ###
+sudo journalctl -p 3 -xb
+
+
+### LIST WHICH PACKAGES WERE CHANGED AND WHEN ###
+ /var/log/pacman.log
+
+### RESET APPS GRID IN GNOME 3.38 ###
+gsettings reset org.gnome.shell app-picker-layout 
+alt + f2, then 'r' to reset gnome
+
+### CHECK PUBLIC IP ADDRESS ###
+$ echo $(wget -qO - https://api.ipify.org)
+OR
+$ echo $(curl -s https://api.ipify.org)
+
+
+### ENABLE TRIM FOR SSD ON ARCH ###
+$ sudo systemctl enable fstrim.timer 
+
+
+### FIX FIREFOX DARK INPUTS BULLSHIT ###
+
+Open about:config in Firefox
+Create a new String value (right click), named widget.content.gtk-theme-override
+Set a light GTK theme name as the value, i chose Arc-Darker or Adwaita
+Restart Firefox
+	
+	
+### ENABLE UFW/GUFW IN ARCH  ###
+
+$ sudo systemctl start ufw.service
+$ sudo systemctl enable ufw.service
+$ sudo ufw enable
+
+
+### FIX MOUSE RIGHT-CLICK STARTING VISUAL MODE IN ARCH ###
+$ touch ~/.vimrc
+$ echo "syntax on" > ~/.vimrc
+$ echo "set mouse-=a" >> ~/.vimrc
+$ source ~/.vimrc
+
+Do the same in /root/ otherwise when you 'sudo vim filename' it won't work. 
+
+
+### FIX PACMAN AUTOCOMPLETE ###
+install bash-completion (.bashrc does call it, but it’s not installed in a fresh 18.0)
+comment out (or delete) the line "complete -cf sudo" found in ~/.bashrc
+IMPORTANT: reboot the system; simply sourcing .bashrc does not work properly in this case.
+
+
+### FIX VERACRYPT DRIVES NOT SHOWING IN NAUTILUS ON MANJARO ###	
+$ cd /
+$ mkdir media
+
+
+#####  MANUALLY REMOVE GNOME EXTENSIONS #####
+delete them from one or both folders. 
+
+~/.local/share/gnome-shell/extensions 
+/usr/share/gnome-shell/extensions
+
+
+###  USING DD TO COPY .ISO TO USB ###
+sudo umount /dev/sdX (where x is usb drive)
+sudo dd if=inputfile.img of=/dev/disk bs=4M status=progress && sync
+
+ln -s ${HOME}/.steam/ubuntu12_32/steam-runtime/i386/lib/i386-linux-gnu/libdbus-1.so.3 ${HOME}/.steam/ubuntu12_32/steam-runtime/pinned_libs_32/libdbus-1.so.3
+
+
+## SHIT TO INSTALL IN DEB ###
+$sudo apt install ranger gdebi dconf-tools gksu keepassx bleachbit neofetch htop nmap rkhunter gnome-icon-theme-extras gnome-icon-theme vim ufw gufw guake vim glances arc-theme vlc sysstat exfat-utils
+
+
+### ENABLE FAN SPEED CONTROL IN NVIDIA SETTINGS ###
+sudo nvidia-xconfig 
+sudo nvidia-xconfig --cool-bits=4
+
+
+### CHANGE SWAPPINESS ###
+$ cat /proc/sys/vm/swappiness  = to check current value.  will likely be 60 (default).
+$ sudo vim /etc/sysctl.conf
+add the line: 
+vm.swappiness=10
+save and exit vim.
+$ sudo sysctl -p /etc/sysctl.conf to change immediately.  or reboot.
+
+
+### GET CPU INFO ###
+$ cat /proc/cpuinfo
+or
+$lscpu
+*to change governor*
+$sudo cpupower frequency-set -g performance
+$ watch grep \"cpu MHz\" /proc/cpuinfo  (to monitor speeds in real time)
+sy
+
+
+### INSTALLING NVIDIA DRIVERS ON DEBIAN ###
+
+$ apt update && apt upgrade
+$ edit /etc/apt/sources.list
+$ add contrib non-free after main in every one of the official Debian repository lines
+$ sudo dpkg --add-architecture i386 to add 32-bit support
+$ apt install firmware-linux nvidia-driver nvidia-settings nvidia-xconfig
+$ nvidia-xconfig
+$ apt install libgl1-nvidia-glx:i386 (SO STEAM WILL WORK)
+$ apt install libsdl1.2debian:i386
+
+
+
+#### FUCK RUNS LAST COMMAND AS SUDO ####
+sudo vim ~/.bashrc
+alias fuck='sudo $(history -p \!\!)'
+
+
+#### ADD RM -I ALIAS ####
+vim ~/.bashrc
+alias rm='rm -i'   
+. ~/.bashrc   To reload bash without restarting
+
+
+### ENABLE TRIM ON DEBIAN ###
+
+$ sudo cp /usr/share/doc/util-linux/examples/fstrim.{service,timer} /etc/systemd/system
+$ sudo systemctl enable fstrim.timer
+
+
+##### CHANGE MOUSE POLL RATE #####
+sudo vim etc/modprobe.d/modprobe.conf
+* add this to the file
+options usbhid mousepoll=1  
+value of 'x' 
+1 = 1000Hz
+2 = 500Hz
+4 = 250Hz
+
+$ sudo -s
+# modprobe -r usbhid && modprobe usbhid
+
+to check: 
+cat /sys/module/usbhid/parameters/mousepoll
+
+
+sudo modprobe -r usbhid && sudo modprobe usbhid mousepoll=1  (change without reboot)
+
+
+
+#### VIM MOUSE PASTE FIX (DEBIAN) ####
+echo "set mouse=" > .vimrc
+sudo echo "set mouse=" | sudo tee -a /root/.vimrc
+
+
+
+### ADDING 'NEW FILE' TO CONTEXT MENU ###
+### from ~/Templates ###
+$ touch 'New Text File.txt' && touch 'New Word File.doc' && touch 'New Excel Spreadsheet.xls'
+
+# Protect su by limiting access only to admin group -
+$ sudo groupadd admin
+$ sudo usermod -a -G admin euclid
+$ sudo dpkg-statoverride --update --add root admin 4750 /bin/su
+
+
+### ADD COLOR TO CLI ###
+$ sudo vim .bashrc [uncomment "force_color_prompt=yes"]
+
+# Border window configcd ~/.
+$ edit /usr/share/themes/Radiance/metacity-1/metacity-theme-1.xml
+$ Change Border sizes left_width, right_width, and bottom_height to 3,4, or 5.
+
+
+
+### ADD GNOME PPA ###
+$ sudo add-apt-repository -y ppa:gnome3-team/gnome3
+
+
+
+### INSTALL USERS & GROUPS GUI ###
+$ sudo apt-get install gnome-system-tools
+
+
+
+### REMOVING PPA (UBUNTU ONLY ###
+$ sudo apt install ppa-purge
+$ sudo ppa-purge NameOfPPA
+$ apt-cache policy WILL LIST PPA's
+
+
+
+### INSTALL AUDACITY
+sudo add-apt-repository ppa:ubuntuhandbook1/audacity
+sudo apt-get update
+sudo apt-get install audacity
+
+
+### INSTALL ADAPTA THEME
+sudo apt-add-repository ppa:tista/adapta -y
+sudo apt-get update
+sudo apt-get install adapta-gtk-theme
+
+### To Reset Unity:
+Terminal Commands:
+sudo apt-get install dconf-tools
+dconf reset -f /org/compiz/
+setsid unity
+unity --reset-icons
+
+### change enp4s0 back to eth0
+sudo vim /etc/default/grub
+GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
+sudo update grub
+reboot
+
+
+
+### INSTALL HANDBRAKE (UBUNTU 14 ONLY)
+sudo add-apt-repository ppa:mdeslaur/handbrake
+sudo apt-get update
+sudo apt-get install handbrake
+
+
+
+#################  FIX VIDEO THUMBNAILS NOT SHOWING ###############
+sudo apt-get install gstreamer1.0-libav
+rm -r ~/.cache/thumbnails/fail
+
+
+
+### FIX AMD-VI ERROR
+sudo vim /etc/default/grub
+GRUB_CMDLINE_LINUX="iommu=soft"
+sudo update-grub
+
+
+
+### CHANGING TERMINAL SHIT
+$echo $PS1  (Shows Default)
+vim ~/.bashrc
+edit the PS1 section:  \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[1;31m\]⇀∢⮡⏎⎊⎈→
+
+###  IMPROVING SOUND QUALITY ###
+pacmd list-sinks | grep sample
+/etc/pulse/daemon.conf
+resample-method = src-sinc-medium-quality
+default-sample-format = s24le
+default-sample-rate = 96000  (MAY WANT TO LEAVE THIS ALONE. CAN CREATE AUDIO POPPING)
+pulseaudio -k
+pulseaudio --start
+
+USE THIS FOR REALTEK ALC889
+resample-method = src-sinc-medium-quality
+default-sample-format = s32le
+default-sample-rate = 48000
+alternate-sample-rate = 96000
+
+
+
+### REQUIRING PASSWORD WHEN MOUNTING SECONDARY DRIVES IN UBUNTU ###
+gksu gedit /var/lib/polkit-1/localauthority/10-vendor.d/com.ubuntu.desktop.pkla
+ResultActive=auth_admin_keep (change line 4 to this)
+
+
+### REMOVING SYSTEM PROGRAM PROBLEM DETECTED MESSAGES ###
+sudo rm /var/crash/*
+
+
+sudo sysctl -p (to reload)
+
+
+
+### SECURING LINUX ###
+sudo apt install ufw
+sudo apt install gufw
+sudo ufw enable
+sudo ufw status verbose
+
+
+
+### SECURE SHARED MEMORY ###
+sudo vim /etc/fstab
+tmpfs     /run/shm     tmpfs     defaults,noexec,nosuid     0     0
+*REBOOT*
+
+
+
+### HARDEN NETWORK WITH SYSCTL SETTINGS ###
+sudo vim /etc/sysctl.conf
+
+# IP Spoofing protection
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv6.conf.all.rp_filter = 1
+
+# Block SYN attacks
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_syn_retries = 5
+
+# Ignore ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+
+# Ignore send redirects
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+
+# Disable source packet routing
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0
+
+# Log Martians
+net.ipv4.conf.all.log_martians = 1
+
+# Ignore bogus icmp errors (default)
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+
+# Ignore ICMP broadcast requests
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+
+# Ignore Directed pings
+net.ipv4.icmp_echo_ignore_all = 1
+
+# Network traffic congestion control
+net.ipv4.tcp_congestion_control = htcp
+
+# Disable IPv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+sudo sysctl -p  (reloads sysctl)
+
+### PREVENT IP SPOOFING ###
+sudo vim /etc/host.conf
+order bind,hosts
+nospoof on
+
+### INSTALL FAIL2BAN ###
+sudo apt-get install fail2ban
+sudo vim /etc/fail2ban/jail.conf (TO EDIT SETTINGS)
+
+### CHECK FOR ROOTKITS ###
+sudo apt install rkhunter
+sudo rkhunter --update
+sudo rkhunter --propupd
+sudo rkhunter --check
+
+### CHECK OPEN PORTS WITH NMAP ###
+sudo apt install nmap
+nmap -v -sT localhost = scan for open ports
+sudo nmap -v -sS localhost = SYN scanning
+
+### INSTALL ARPON ###
+sudo apt-get update
+sudo apt-get install arpon
+
+sudo nano /etc/default/arpon
+
+Uncomment the DARPI and RUN, makes sure it is:
+
+DAEMON_OPTS="-q -f /var/log/arpon/arpon.log -g -D"
+RUN="yes"
+
+sudo systemctl enable arpon
+sudo systemctl restart arpon
+
+### OTHER ###
+
+sudo service smbd stop
+sudo service cups stop
